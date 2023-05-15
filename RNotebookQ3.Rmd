@@ -1,0 +1,540 @@
+                                    *HERDINGS IN TECHNICAL MARKETS/SECTOR*
+                                    
+                                    
+                                        -BY Mausumi Mahapatra(22307615)
+ 
+                                               *INTRODUCTION:*
+
+Herding refers to the process through which investors mimic each other's activities by making decisions based on the decisions of others.The herds are often the investors, fund managers, and influencers these days. Investors just follow in the footsteps of one individual without appropriate knowledge on rewards and hazards on trade-offs. This type of behavior is common in the technical industry, where investors seek to follow market trends and advice of their heroes due to rapid changes in technology and uncertainty.Consider the OpenAi's chatGPT as a recent example. The pricing was too cheap when it was launched. However, once it began to make noise in the market due to rising trends, investors began to invest in it.Although its growth is fairly fantastic right now, the future cannot be foreseen. The prediction is often dependent on several things, and if we notice static growth, the investor should withdraw his or her money. However, if the investor does not consider all of the circumstances and does not withdraw his money at the appropriate moment, he may lose the rewards.The MAANG companies are another example. Despite being stronger performing markets with the highest growth rates and a recent favorite of many investors, they are concerned about market saturation. Alphabet Inc. (GOOGL), the parent company of GOOGL, has considerable volatility, and it goes without saying that the technical sector is an unstable market. If an adverse event occurs in the technical sector, a market correction will occur, and investors who are investing blindly may incur significant losses. As a result, we are attempting to analyze the current herding behavior of a few technical stocks through our analysis.
+
+Eight companies are included in our analysis which are Amazon(AMZN), Alphabet Inc.(GOOGL),Apple Inc.(AAPL),Microsoft Corporation(MSFT), NVIDIA Corp(NVDA), Meta Platforms Inc.(META), Oracle Corp.(ORCL) , and ASML Holding NV(ASML) for a tenure of 5 years(2018-05-01 to 2023-05-11).
+
+                                                 *ANALYSIS*:
+
+```{r}
+rm(list=ls(all=TRUE))
+```
+
+Loading the required libraries
+
+```{r}
+require (xts) #time series conversion
+library(tidyquant)#Yahoo finance
+library(pastecs) #For descriptive statistics
+library (xts) #For time series
+library (zoo) # Time series manipulations
+library (PerformanceAnalytics) #Performances
+require (sandwich) #Statistical package
+require(lmtest) #Linear Regression
+require (tvReg)#Time-varying regression model
+library (brms)#For Bayesian model
+library (MSwM)#For markov regime switching model
+library (quantreg)#For quantile regression
+library(TTR) # for technical indicators
+library(dplyr) #for manipulations
+```
+
+Downloading the stocks
+
+```{r}
+time_series = c("AAPL","AMZN","MSFT","NVDA","GOOGL","ASML","META", "ORCL")
+getSymbols(time_series, from = '2018-05-01',
+           to = "2023-05-11",warnings = FALSE,
+           auto.assign = TRUE)
+```
+
+Cleaning the data
+
+```{r}
+AAPL <- na.omit(AAPL)
+AMZN <- na.omit(AMZN)
+MSFT <- na.omit(MSFT)
+NVDA <- na.omit(NVDA)
+GOOGL <- na.omit(GOOGL)
+ASML <- na.omit(ASML)
+META <- na.omit(META)
+ORCL <- na.omit(ORCL)
+```
+
+Checking the dimensions of the datas
+
+```{r}
+dim(AAPL)
+dim(AMZN)
+dim(MSFT)
+dim(NVDA)
+dim(GOOGL)
+dim(ASML)
+dim(META)
+dim(ORCL)
+```
+
+Building chart series and return calculation for all stocks
+
+```{r}
+#AAPL
+chart_Series(AAPL$AAPL.Close) #plotting the series
+
+AAPL.xts = AAPL$AAPL.Close
+head(AAPL.xts)
+
+returnaapl = diff (log(AAPL.xts)) # Log return calculation
+returnaapl = returnaapl [-1] # removing the first empty observation, received after return calculation
+summary (returnaapl)
+
+plot(returnaapl, main = " Apple  Inc. Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+
+```{r}
+#AMZN
+
+chart_Series(AMZN$AMZN.Close) #plotting the series
+
+AMZN.xts = AMZN$AMZN.Close
+head(AMZN.xts)
+
+returnamzn = diff (log(AMZN.xts)) # Log return calculation
+returnamzn = returnamzn [-1] # removing the first empty observation, received after return calculation
+summary (returnamzn)
+
+plot(returnamzn, main = " Amazon  Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+
+```{r}
+#MSFT
+
+chart_Series(MSFT$MSFT.Close) #plotting the series
+
+MSFT.xts = MSFT$MSFT.Close
+head(MSFT.xts)
+
+returnmsft = diff (log(MSFT.xts)) # Log return calculation
+returnmsft = returnmsft [-1] # removing the first empty observation, received after return calculation
+summary (returnmsft)
+
+plot(returnmsft, main = " Microsoft  Corporation Daily returns", xlab = "year", type = "l", ylab = "log return")
+
+```
+
+```{r}
+#NVDA
+
+chart_Series(NVDA$NVDA.Close) #plotting the series
+
+NVDA.xts = NVDA$NVDA.Close
+head(NVDA.xts)
+
+returnnvda = diff (log(NVDA.xts)) # Log return calculation
+returnnvda = returnnvda [-1] # removing the first empty observation, received after return calculation
+summary (returnnvda)
+
+plot(returnnvda, main = " Nvidia  Corp Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+
+```{r}
+#GOOGL
+
+chart_Series(GOOGL$GOOGL.Close) #plotting the series
+
+GOOGL.xts = GOOGL$GOOGL.Close
+head(GOOGL.xts)
+
+returngoogl = diff (log(GOOGL.xts)) # Log return calculation
+returngoogl = returngoogl [-1] # removing the first empty observation, received after return calculation
+summary (returngoogl)
+
+plot(returngoogl, main = " Aplphabet Inc. Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+
+```{r}
+#ASML
+
+chart_Series(ASML$ASML.Close) #plotting the series
+
+ASML.xts = ASML$ASML.Close
+head(ASML.xts)
+
+returnasml = diff (log(ASML.xts)) # Log return calculation
+returnasml = returnasml [-1] # removing the first empty observation, received after return calculation
+summary (returnasml)
+
+plot(returnasml, main = " ASML Holding NV Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+
+```{r}
+#META
+
+chart_Series(META$META.Close) #plotting the series
+
+META.xts = META$META.Close
+head(META.xts)
+
+returnmeta = diff (log(META.xts)) # Log return calculation
+returnmeta = returnmeta [-1] # removing the first empty observation, received after return calculation
+summary (returnmeta)
+
+plot(returnmeta, main = " Meta Corportaion Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+
+```{r}
+#ORCL
+
+chart_Series(ORCL$ORCL.Close) #plotting the series
+
+ORCL.xts = ORCL$ORCL.Close
+head(ORCL.xts)
+
+returnorcl = diff (log(ORCL.xts)) # Log return calculation
+returnorcl = returnorcl [-1] # removing the first empty observation, received after return calculation
+summary (returnorcl)
+
+plot(returnorcl, main = " Oracle Corp. Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+DESCRIPTIVE STATISTICS
+
+```{r}
+Returns_dataframe <- data.frame(returnaapl = returnaapl, returnamzn = returnamzn, returnmsft = returnmsft, returnnvda = returnnvda, returngoogl = returngoogl,returnasml = returnasml,returnmeta = returnmeta, returnorcl= returnorcl)
+descriptive.stat.return = stat.desc(Returns_dataframe)
+print(descriptive.stat.return)
+
+```
+OUTPUT EXPLANATION:
+
+The initial analysis gives an overview to the selected stocks. The mean returns for every stock are small indicating that an investor might not get huge returns on average if he invests in this portfolio. The standard deviation is also small indicating that the stocks are less volatile. The coefficient of variation in relatively high for 80% of the stocks indicating that the deviation from the mean is also large. Overall, the initial analysis suggests that this portfolio is stable and has moderate to minimum returns on an average.
+
+Creation of Herding Function
+
+```{r}
+#Creating the function for CSAD AND RM
+exchange.herd = function(Returns_dataframe){
+  n = ncol(Returns_dataframe)
+  RM = rowMeans(Returns_dataframe)
+  Temp_diff = abs(Returns_dataframe - RM)
+  Temp_sum = rowSums(Temp_diff)
+  CSAD = Temp_sum/ncol(Returns_dataframe)
+  CSAD = cbind(CSAD, RM)
+  return(CSAD)
+}
+
+#Calling the exchange.herd function
+function_call = exchange.herd(Returns_dataframe)
+head(function_call)
+
+#Converting function_call into a dataframe
+CSAD.df = fortify.zoo(function_call)
+#Calculating Rm^2
+CSAD.df$RMx = CSAD.df$RM^2
+#Remove the first NA rows
+CSAD.df = CSAD.df[-c(1)]
+head(CSAD.df)
+tail(head(CSAD.df))
+
+#Reassigning the columns
+Y = CSAD.df$CSAD
+X1 = abs(CSAD.df$RM)
+X2 = CSAD.df$RMx
+```
+
+MODELS:
+
+1. Linear Regression Model
+
+```{r}
+Model <- lm(Y~X1+X2)
+print(Model)
+summary(Model)
+AIC(Model)
+BIC(Model)
+
+#Newey-West Hetroscedasticity and Autocorrelation Consistent(HAC) extimators
+coeftest(Model, vcov = NeweyWest(Model, verbose = T)) 
+```
+
+2. Time Varying Regression Model
+
+```{r}
+TVRModel.fit = tvLM(Y~X1+X2, bw = NULL)
+head(TVRModel.fit$coefficients)
+head(TVRModel.fit$coefficients[,1], type ="l")
+head(TVRModel.fit$coefficients[,2], type ="l")
+head(TVRModel.fit$coefficients[,3], type ="l")
+summary(TVRModel.fit)
+loglik <- sum(log(dnorm(TVRModel.fit$residuals)))
+k <- length(coef(TVRModel.fit))
+n <- length(TVRModel.fit$residuals)
+BIC <- -2*loglik + k*log(n)
+AIC <- -2*loglik + 2*k
+print(BIC)
+print(AIC)
+```
+
+3. Bayesian Model
+
+```{r}
+Hourly = cbind(Y, X1, X2)
+BayesianModel.fit = brm(formula = Y~X1+X2,
+                        data =Hourly,
+                        seed = 1234)
+summary(BayesianModel.fit)
+posterior_samples <- posterior_samples(BayesianModel.fit)
+posterior_variance <- posterior_samples$sigma^2
+1- (mean(posterior_variance) / var(Hourly[,1]))
+k <- length(fixef(BayesianModel.fit))
+n <- nrow(Hourly)
+loglik <- sum(log_lik(BayesianModel.fit))
+BIC <- -2*loglik + k*log(n)
+AIC <- -2*loglik + 2*k
+print(BIC)
+print(AIC)
+```
+
+4.Markow Regime-Switching Model
+
+```{r}
+#Number of states
+nstates <- 2
+#estimation of the linear model
+MarkowFit = msmFit(Model, k = nstates, sw = rep(TRUE, 4))
+summary(MarkowFit)
+plotProb(MarkowFit, which = 1)
+```
+5.Quantile Regression
+
+```{r}
+#5.Quantile Regression
+tauvalues <- seq(from = .1, to = .9, by = .1)
+QRModel <- rq(Y~X1+X2, tau = tauvalues)
+summary(QRModel)
+plot (QRModel, type = "l")
+AIC(QRModel)
+res <- resid(QRModel)
+RSS <- sum(res^2)
+print(RSS)
+n <- nstates
+BIC <- n*log(RSS/n) + k*log(n)
+print(BIC)
+```
+The R-squared calculated value from the above values is 0.007785.
+
+Based on the above 5 models, the best model is the one which has the lowest AIC and BIC values and the highest R-squared value is prefered as it indicates a better model which fit well. Based on our analysis, the MarkovFit model has the highest R-squared(0.3262) value and lowest AIC(-10389.93) and BIC(-10316.22) values and therefore it is the best fit model for our analysis. A higher R squared value states that the model has captured most of the underlying patterns and dynamics of the all the stock data. Moreover, as the goal is to identify herding behaviour of the models, MarkovFit is the best one to consider as it captures interdependence among the variables over time. However, it will not identify extreme cases through distributions.
+
+*Herding on UP/DOWN days and Low/High Volatile days*
+
+To calculate the volatilities, we are using the standard deviation of each stocks.
+
+```{r}
+#First we are going to calculate the volatility of all the stocks 
+volatilities <- apply(Returns_dataframe, 2, sd, na.rm = TRUE)
+
+
+#Matrix
+volatilities_matrix <- matrix(volatilities, ncol = 1, dimnames = list(names(volatilities)))
+print(volatilities_matrix)
+```
+
+Function to calculate up/down days and high/low volatility
+```{r}
+exchange.herdlowhigh = function(Returns_dataframe, up_down = "up", vol_up_down = "high"){
+  #Inclusion of only up or down values
+  if(up_down == "up"){
+    Returns_dataframe = Returns_dataframe[rowMeans(Returns_dataframe)>0,]
+  } else if (up_down == "down"){
+    Returns_dataframe = Returns_dataframe[rowMeans(Returns_dataframe)<0,]
+  }
+  
+  #Inclusion of only high low volatility days
+  if(vol_up_down == "high"){
+    volatilities <- apply(Returns_dataframe, 2, sd, na.rm = TRUE)
+    Returns_dataframe = Returns_dataframe[rowSums(Returns_dataframe < volatilities)>0,]
+  }else if (vol_up_down == "low"){
+    volatilities <- apply(Returns_dataframe, 2, sd, na.rm = TRUE)
+    Returns_dataframe = Returns_dataframe[rowSums(Returns_dataframe > volatilities)>0,]
+  }
+  
+  n = ncol(Returns_dataframe)
+  RM = rowMeans(Returns_dataframe)
+  Temp_diff = abs(Returns_dataframe - RM)
+  Temp_sum = rowSums(Temp_diff)
+  CSAD = Temp_sum/ncol(Returns_dataframe)
+  CSAD = cbind(CSAD, RM)
+  return(CSAD)
+}
+```
+
+To understand the herding behavior, herding volatility down and herding returns up is considered.
+Calculation of up returns and low volatile days.
+
+```{r}
+herdings_day_up_volatility_low <- exchange.herdlowhigh(Returns_dataframe, up_down = "up",vol_up_down = "low")
+print(herdings_day_up_volatility_low)
+```
+
+Calculating the number of days of up returns and low volatility
+
+```{r}
+#Calculating the number of days of up returns and low volatility
+up_return_low_volatility <- sum(herdings_day_up_volatility_low[]>0)
+print(up_return_low_volatility)
+```
+
+OUTPUT EXPLANATION:
+
+In 5 years, for 1142 days the herding returns were up and the herding volatility was low, which is approximately 90.20%.
+
+INFERENCE:
+
+According to the estimation of herding on high returns and low volatility days, investors were quite optimistic about the technology sector. They were willing to take more risks since they anticipated bigger profits and growth in the companies identified in our analysis. However, herding behavior could have been displayed owing to a variety of factors such as market attitudes, news and social media impacts, and many more, thus a factor model analysis is required to produce solid conclusions.                    
+
+*INFORMATION CASCADING*
+
+The information cascading would help for portfolio optimization of all the stocks in the portfolio. Thus, the strategy would optimize portfolio selection based on projected return and risks, which are in turn influenced by market mood. Based on past data, this machine learning model is used to better forecast private signals.  The syntax mimics possible investors' trading decisions using private signals, moving averages, and the Relative Strength Index.  
+
+The true value is generated through daily returns and private signals are generated through signal accuracies, where 1 represnts positive returns and 0 represents negative returns.The private signals represent the beliefs of individuals.
+
+The decision making step simulation takes place with respect to each day.
+
+```{r}
+#Pulling the data for only closing prices and volumes
+stocckprices<- lapply(time_series, function(time_series){
+  getSymbols(time_series, from = '2018-05-01',
+           to = "2023-05-11",warnings = FALSE,
+           auto.assign = FALSE)[,6]
+})
+#Calculation of daily returns
+daily_return <- lapply(stocckprices, function(price)diff(log(price))[-1])
+#Setting up of parameters
+num_days <- length(daily_return)
+#Period for moving average lookback period
+lookback_period <- 10
+#Threshold for investment decisions
+threshold <- 0.01
+#Transaction cost
+transaction_cost <- 0.002
+start_date = '2018-05-01'
+end_date = "2023-05-11"
+
+#Estimating signal Accuracy 
+signal_accuracy <- lapply(seq_along(time_series), function(j){
+  
+  #Data Preparation
+  stock_data <- stocckprices[[j]] %>% as.data.frame () %>% dplyr::mutate(id = 1:n())
+  colnames(stock_data) <- c("price", "id")
+  stock_data <- stock_data %>% mutate(signal = ifelse(lag(price, 1) < price, 1, 0))
+  stock_data <- stock_data %>% dplyr::mutate(across(starts_with("price"), list(lag_1 =~ lag(.x, 1), lag_2 =~lag(.x, 2))))
+  
+  #Fit the LR model
+  modelLR <- glm(signal ~. -price - id, data = stock_data, family = "binomial", na.action = na.exclude)
+  
+  #Predicting signal accuracy on training data
+  predict <- predict(modelLR, stock_data, type = "response")
+  accuracy <- mean((predict > 0.5) == stock_data$signal, na.rm = TRUE)
+  accuracy
+})
+
+
+#Generation of private signals
+#1 means it is a positive return and you should go ahead and buy it, whereas 0 is negative returns means you should sell it.
+set.seed(123)
+true_values <- lapply(daily_return, function(ret) ifelse(ret > 0, 1, 1))
+private_signals <- mapply(function(tv, acc){
+  rbinom(length(tv), 1, ifelse(tv ==1 , acc, 1-acc))
+}, true_values, signal_accuracy, SIMPLIFY = FALSE)
+
+#Initialization of decision matrix
+Decisions <- matrix(0, nrow =num_days, ncol = length(time_series) )
+
+#Calculation of moving averages of past returns and technical indicators-RSI 
+
+moving_average_return <- lapply(daily_return, function(ret){
+  rollapply(ret,lookback_period, mean, align = "right", fill = NA )
+})
+
+RSI_period <- 14
+rsis <- lapply(stocckprices, function(price){
+  RSI(price, n = RSI_period, maType = "WMA")
+})
+
+#Code for optimization of portfolio
+Portfolio_optmize <- function(returns, target_return, lambda = 0.5){
+  cov_mat <- cov(returns)
+  ER <- colMeans(returns)
+  n_asset < ncol(return)
+  
+  DecisionMat <- cov_mat+lambda*diag(1, n_asset, n_asset)
+  Decsionvector <- -ER
+  Amatrix <- cbind(matrix(1, nrow = n_asset, ncol = 1 ), diag(n_asset))
+  bvec <- c(1, rep(0, n_asset))
+  meq <- 1
+  
+  Result <- solve.QP(DecisionMat = DecisionMat,Decsionvector = Decsionvector, Amatrix = Amatrix, bvec = bvec, meq = meq )
+  weights <- result$solution
+  return(weights)
+}
+
+#Function for calculating the likelihood ratio of observed decisions
+likelihood_ratio_calculated <- function(decision_so_far, signal_accuracy){
+  num_invest <- sum(decision_so_far)
+  num_not_invest <- length(decision_so_far) - num_invest
+  (signal_accuracy/(1-signal_accuracy))^num_invest *((1-signal_accuracy)/signal_accuracy)^num_not_invest
+}
+
+#Simulating the decision making process
+
+for (i in seq_len(num_days)){
+  if (i <= lookback_period){
+    #Investor to make a decsion based on  their private signals during initial lookback
+    Decisions[i,] <- sapply(private_signals, function(signal) ifelse(signal[i]==1,1,0))
+  } else {
+    
+    #Calculation of expected returns
+    ER <- sapply(moving_average_return, function(mar) mar[i])
+    
+    #Then optimizing the portfolio allocation
+    returnsmatrix <- do.call(cbind, daily_return)
+    colnames(returnsmatrix) <- time_series
+    optimized_weights <- optimize_portfolio(returnsmatrix[(i-lookback_period):(i-1),], mean(ER))
+    
+    #Subsequent investors decisions
+    for (j in seq_along(time_series)){
+      decsions_so_far <- Decisions[(i - lookback_period):(i-1), j]
+      likelihood_ratio <- likelihood_ratio_calculated(decsions_so_far,signal_accuracy[[j]])
+      
+      #Adjusting the opti weights based on likelihood ratio, private signals and transaction costs
+      if (private_signals[[j]][i] == 1 && likelihood_ratio > 1) {
+        Decisions[i, j] <- optimized_weights[j] * (1 + min(1, (likelihood_ratio - 1 - transaction_cost) / 10)) # Normalized to [0, 1]
+      } else if (private_signals[[j]][i] == 0 && likelihood_ratio < 1) {
+        Decisions[i, j] <- optimized_weights[j] * (1 - min(1, (1 - likelihood_ratio - transaction_cost) / 10)) # Normalized to [0, 1]
+      } else {
+        Decisions[i, j] <- optimized_weights[j]
+      }
+    }
+    
+  }
+}
+
+#Results:
+print(paste("time_series:", paste(time_series, collapse = ", ")))
+print(paste("Date range: ", start_date, "to", end_date))
+print(paste("Signal Accuracies(based on Historical data):", paste(round(unlist(signal_accuracy),2),collapse = ", ")))
+```
+
+
+```{r}
+for (i in seq_along(time_series)){
+  print(paste("time_series:",time_series[i]))
+  print(paste("True values(1: buy, o:sell):", paste(true_values[[i]], collapse = ", ")))
+  print(paste("Private signals (1: buy, 0: sell):", paste(private_signals[[i]], collapse = ", ")))
+  print(paste("Decisions (Portfolio allocation:", paste(round(Decisions[,i], 2), collapse= ", ")))
+}
+```
+
+OUTPUT EXPLANATION:
+
+Based on the results of Information cascade we can notice that all the True values are 1 for all time periods indicating that investment in all of these stocks was a good option for the investors.Based on the true values, private signals are generated by individuals. Also, note that the private signals are not accurate representation of the true values.And based on on the private signals a decision is made by the investor, in which 1 indicates buying a stock and 0 indicates not buying a stock.
+
+                                              *CONCLUSION*
+
+Finally, the technology stock market is seeing heavy herding. It could be due to a variety of things, including stock misinformation or a lack of proper information. Investors may utilize prior experience and knowledge to forecast future pricing, which may not be accurate given dynamic market circumstances and ever-changing customer dynamics. It is worth noting, however, that herding is not all that problematic in the technology sector, at least for the stocks chosen for our investigation. These are low volatility markets that provide a consistent return and yearly dividends. These advantages may also be attributable to the corporations themselves, which are huge market capitalization companies with less debt. To understand the reasons for growth and higher returns, the research would need to be expanded utilizing factor models. This would provide precise reasons for such dynamics. However, nothing can be guaranteed in the stock market, therefore it is always best to choose carefully and make informed selections while investing.
+
+
+

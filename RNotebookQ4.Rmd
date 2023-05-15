@@ -1,0 +1,2222 @@
+                            *TRADITIONAL FINANCE VS CRYPTOCURRENCIES*  
+                            
+                            
+                                - By Mausumi Mahapatra[22307615]
+                                    
+                                    
+                                        **INTRODUCTION**
+
+Investors all across the world desire assets that give them with the highest possible returns. Some short-term investors trade and expect quick gains, while others invest for the long term to be safe and receive a stable income through dividends and returns through SIPs (Systematic Investment Plans). The investment alternatives available vary depending on the projected returns and the duration of the expected returns. In this research, we will analyze and compare traditional assets and crypto-currencies, and then remark on the values associated with them based on the investor's investing strategy.For the analysis, five traditional assets Vanguard Real Estate Index Fund (VNQ) - ETF, Protecter and Gamble Co(PG) , The Kroger Co. (KR), Chevron Corporation (CVX) and Alphabet Inc. (GOOGL) are considered. These assets were chosen with the current economic downturn in mind, with the goal of minimizing risks through diversification and maximizing profits through safe and less volatile options and higher static dividends, as these parameters would outperform in 2023, according to Northerntrust research. Five crypto-currencies Bitcoin, Tether, XRP, BNB and Ethereum were chosen. These assets are chosen by keeping in the current market capitalization and geo-political dynamics. The data collection period is 5 years(2018-05-01 to 2023-05-11). All the assets both traditional and cryptocurencies are explained in detail below:
+
+*TRADITIONAL ASSETS*
+
+*Vanguard Real Estate Index Fund (VNQ) - ETF*: It is a real estate fund that provides a high level of income through long term tracking of performance of publicly traded equity REITs and other real estate investments. According to Yahoo finance it has a YTD performance rate of 10.8%. It has a Net Asset Valuation of 62.84B and PE ratio of 22.62(\<30), which is ideal selection for an asset.
+
+*Protecter and Gamble Co*: It is a large cap market in the Consumer Defensive sector belonging to Household and Personal Products industry. Their revenue has increased to 7% in the first quarter of 2023 and has gained 3.7% compared to its industry pairs in the final quarter of 2022. It also has a Net Asset Valuation of 365.59B and PE ratio of 26.92(\<30), which is ideal selection for an asset.
+
+*The Kroger Co.* : It is a mid size company operating under Consumer Defensive sector and belonging to Grocery Stores industry according to yahoo finance. Although it has a dividend rate of 2.12%, the return on asset rate is 5.76%. It also has a Net Asset Valuation of 35.213B and PE ratio of 16.02(\<30), which is ideal selection for an asset.
+
+*Chevron Corporation* : It is a large cap company with an asset valuation of 298.994B.It has a less P/E ratio(8.52) and has a dividens rate of 3.80%. The company belongs to the energy sector and Oil&Gas Integrated industry. And according to report on Northerntrust in 2023, the maximum returns could be expected from the energy sector and Chevron Corporation being the large cap company has less volatility associated with it.
+
+*Alphabet Inc.*: It is large-cap company with an asset valuation of 1.429B. it has a P/E ratio of 25.03(\<30) and belongs to Communication services sector and Internet Content & Information industry. According to forbes,althoug the revenue slowed to just 10.3% in 2022, the growth is expected to increase by 7% in 2023 and beyond in 2024.
+
+*CRYPTO-CURRENCY ASSETS*
+
+According to an article in Forbes, the below selected crypro-currencies are best for investment in May 2023.
+
+*Bitcoin*: Bit-coin runs on block-chain and has a growth rate of 5,446% making it one of the most eligible investment option. It has a market capitalization of 510.544B.
+
+*Tether*: To have stability in portfolio, Tether is on of the best options as it's tageed to dollars and therefore used in trading and has a market capitalization of 82.737B.
+
+*XRP*: It has a growth rate of 7,001% and can be used to facilitate exchanges of different currency types. It has a market capitalization of 21.958B.
+
+*BNB*: It is used to do trade in Binance, one of the largest crypto exchanges.It has a growth rate of 314,430% and can also be exchanged in other cypto forms making it one of the most important crypto asset in th eportfolio. It has a market capitalization of47.63B.
+
+*Ethereum*: It is both a block-chain and a crypto-currency running on NFTs has tremendous growth options. It has a growth rate of 16,693% and therefore is a smart option to be added in the portfolio. It has a market captalization of 217.742.
+
+                                               **ANALYSIS**
+loading the necessary libraries
+```{r}
+rm(list=ls(all=TRUE))
+require (xts) #time series conversion
+library(tidyquant)#Yahoo finance
+library(dplyr)
+require (fBasics)
+library(timetk)
+library(tidyverse)
+library(Ecdat)
+data(Mishkin,package="Ecdat")
+library (tseries) # GARCH MODEL
+library (rugarch)# GARCH MODEL
+library(readxl) #Read excel Files in R
+library(zoo)#
+library(openxlsx)
+library(imputeTS)
+library (moments) #D’Agostinotest of skewness
+library (ADGofTest)#Anderson-Darling goodness of fit test
+library(vars)#Varslelect package
+```
+Downloading of Data from Yahoo Finance
+```{r}
+#Downloading traditional data
+
+traditional_time_series = c("VNQ","PG","KR","CVX","GOOGL")
+getSymbols(traditional_time_series, from = '2018-05-01',
+           to = "2023-05-07",warnings = FALSE,
+           auto.assign = TRUE)
+
+#Downloading cryptocurrencies data
+
+cryptocurrencies_time_series = c("BTC-USD","USDT-USD","XRP-USD","BNB-USD","ETH-USD")
+getSymbols(cryptocurrencies_time_series, from = '2018-05-01',
+           to = "2023-05-07",warnings = FALSE,
+           auto.assign = TRUE)
+```
+Separate analyses will be conducted to compare traditional finance with crypto-currencies as the factors impacting crypto-currency pricing and returns are distinct from traditional finance such as stocks and bonds.For example, stock and bond values are heavily influenced by company performance, inflation, and interest rates, but crypto-currency prices are influenced by supply and demand policies, technological improvements, and other factors.
+
+                                      **EDA**
+
+Cleaning the data
+
+```{r}
+VNQ <- na.omit(VNQ)
+PG <- na.omit(PG)
+KR <- na.omit(KR)
+CVX <- na.omit(CVX)
+GOOGL <- na.omit(GOOGL)
+`BTC-USD` <- na.omit(`BTC-USD`)
+`USDT-USD` <- na.omit(`USDT-USD`)
+`XRP-USD` <- na.omit(`XRP-USD`)
+`BNB-USD` <- na.omit(`BNB-USD`)
+`ETH-USD` <- na.omit(`ETH-USD`)
+```
+
+Checking the dimensions of the datas
+
+```{r}
+dim(VNQ)
+dim(PG)
+dim(KR)
+dim(CVX)
+dim(GOOGL)
+
+dim(`BTC-USD`)
+dim(`USDT-USD`)
+dim(`XRP-USD`)
+dim(`BNB-USD`)
+dim(`ETH-USD`)
+```
+For comparision all dimesions of crytos are equal and all dimesions of traditional assets are equal.
+
+**Traditional Financial Series**
+
+*VNQ*
+```{r}
+#plotting the series
+chart_Series(VNQ$VNQ.Close) 
+
+VNQ.xts = VNQ$VNQ.Close
+head(VNQ.xts)
+
+# Log return calculation
+returnvnq = diff (log(VNQ.xts)) 
+ # removing the first empty observation, received after return calculation
+returnvnq = returnvnq [-1]
+summary (returnvnq)
+
+plot(returnvnq, main = " Vanguard Real Estate Index Fund (VNQ) - ETF Daily returns", xlab = "year", type = "l", ylab = "log return")
+
+```
+*PG*
+```{r}
+#plotting the series
+chart_Series(PG$PG.Close) 
+
+PG.xts = PG$PG.Close
+head(PG.xts)
+
+# Log return calculation
+returnpg = diff (log(PG.xts)) 
+# removing the first empty observation, received after return calculation
+returnpg = returnpg [-1] 
+summary (returnpg)
+
+plot(returnpg, main = "Protecter and Gamble Co(PG) Daily returns", xlab = "year", type = "l", ylab = "log return")
+
+```
+*KR*
+```{r}
+#plotting the series
+chart_Series(KR$KR.Close) 
+
+KR.xts = KR$KR.Close
+head(KR.xts)
+# Log return calculation
+returnkr = diff (log(KR.xts)) 
+#View(returnkr)
+# removing the first empty observation, received after return calculation
+returnkr = returnkr [-1] 
+summary (returnkr)
+
+plot(returnkr, main = "The Kroger Co. Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*CVX*
+```{r}
+#plotting the series
+chart_Series(CVX$CVX.Close) 
+
+CVX.xts = CVX$CVX.Close
+head(CVX.xts)
+#Log return calculation
+returncvx = diff (log(CVX.xts)) 
+# removing the first empty observation, received after return calculation
+returncvx = returncvx [-1] 
+summary (returncvx)
+
+plot(returncvx, main = "Chevron Corporation Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*GOOGL*
+
+```{r}
+#plotting the series
+chart_Series(GOOGL$GOOGL.Close) 
+
+GOOGL.xts = GOOGL$GOOGL.Close
+head(GOOGL.xts)
+# Log return calculation
+returngoogl = diff (log(GOOGL.xts)) 
+# removing the first empty observation, received after return calculation
+returngoogl = returngoogl [-1] 
+summary (returngoogl)
+
+plot(returngoogl, main = "Alphabet Inc. Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+**Cryptocurrencies Financial Series**
+
+*BTC*
+
+```{r}
+ #plotting the series
+chart_Series(`BTC-USD`$`BTC-USD.Close`)
+
+BTC.xts = `BTC-USD`$`BTC-USD.Close`
+head(BTC.xts)
+ # Log return calculation
+returnbtc = diff (log(BTC.xts))
+# removing the first empty observation, received after return calculation
+returnbtc = returnbtc [-1] 
+summary (returnbtc)
+
+plot(returnbtc, main = "Bitcoin Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*USDT-USD*
+
+```{r}
+#plotting the series
+chart_Series(`USDT-USD`$`USDT-USD.Close`) 
+
+USDT.xts = `USDT-USD`$`USDT-USD.Close`
+head(USDT.xts)
+ # Log return calculation
+returnusdt = diff (log(USDT.xts))
+# removing the first empty observation, received after return calculation
+returnusdt = returnusdt [-1] 
+summary (returnusdt)
+
+plot(returnusdt, main = "Ether USD Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*XRP-USD*
+
+```{r}
+ #plotting the series
+chart_Series(`XRP-USD`$`XRP-USD.Close`)
+
+XRP.xts = `XRP-USD`$`XRP-USD.Close`
+head(XRP.xts)
+# Log return calculation
+returnuxrp = diff (log(XRP.xts)) 
+# removing the first empty observation, received after return calculation
+returnuxrp = returnuxrp [-1] 
+summary (returnuxrp)
+
+plot(returnuxrp, main = "XRP USD Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*BNB-USD*
+
+```{r}
+#plotting the series
+chart_Series(`BNB-USD`$`BNB-USD.Close`) 
+
+BNB.xts = `BNB-USD`$`BNB-USD.Close`
+head(BNB.xts)
+# Log return calculation
+returnbnb = diff (log(BNB.xts)) 
+# removing the first empty observation, received after return calculation
+returnbnb = returnbnb [-1] 
+summary (returnbnb)
+
+plot(returnbnb, main = "BNB USD Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*ETHEREUM*
+
+```{r}
+chart_Series(`ETH-USD`$`ETH-USD.Close`) #plotting the series
+
+ETH.xts = `ETH-USD`$`ETH-USD.Close`
+head(ETH.xts)
+
+returneth = diff (log(ETH.xts)) # Log return calculation
+returneth = returneth [-1] # removing the first empty observation, received after return calculation
+summary (returneth)
+
+plot(returneth, main = "Ethereum Daily returns", xlab = "year", type = "l", ylab = "log return")
+```
+*General statistics - mean, median, variance, quantiles, kurtosis, skewness*
+
+Clubbing the Returns seperately for Traditional assets and cyrpto-currencies
+
+```{r}
+Returns_traditional_dataframe <- data.frame(returnvnq = returnvnq, returnpg = returnpg, returnkr = returnkr, returncvx = returncvx, returngoogl = returngoogl)
+
+Returns_cryptocurrencies_dataframe <- data.frame(returnbtc = returnbtc, returnusdt = returnusdt, returnuxrp = returnuxrp, returnbnb = returnbnb, returneth = returneth)
+
+```
+
+Traditional Finance Results
+
+```{r}
+Mean <- apply(Returns_traditional_dataframe, 2, mean)
+Median <- apply(Returns_traditional_dataframe, 2, median)
+Variance <- apply(Returns_traditional_dataframe, 2, var)
+Quantile <- apply(Returns_traditional_dataframe, 2, quantile)
+Skewness <- apply(Returns_traditional_dataframe, 2, skewness)
+Kurtosis <- apply(Returns_traditional_dataframe, 2, kurtosis)
+
+# Combine the results into a single data frame
+Returns_traditional_results<- data.frame(mean = Mean, median = Median, variance = Variance,skewness = Skewness, kurtosis = Kurtosis)
+Returns_traditional_quantile_results <- (quantile = Quantile)
+# Print the results
+print(Returns_traditional_results)
+print(Returns_traditional_quantile_results)
+```
+OUTPUT EXPLANATION:
+
+• The mean return is positive for all traditional assets indicating that on an average all provide positive returns and is highest for Protecter and Gamble Co.
+• The median is also positive and closer to zero which indicates that the distribution is symmetric.
+• The variance is high and thus the the asset returns changes frequently on a daily basis.
+• The return on Alphabet Inc. (GOOGL) is more symmetric and has low kurtosis whereas for VNQ it is more skewed towards left.
+
+Cryptocurrencies  Results
+
+```{r}
+Mean1 <- apply(Returns_cryptocurrencies_dataframe, 2, mean)
+Median1 <- apply(Returns_cryptocurrencies_dataframe, 2, median)
+Variance1 <- apply(Returns_cryptocurrencies_dataframe, 2, var)
+Quantile1 <- apply(Returns_cryptocurrencies_dataframe, 2, quantile)
+Skewness1 <- apply(Returns_cryptocurrencies_dataframe, 2, skewness)
+Kurtosis1 <- apply(Returns_cryptocurrencies_dataframe, 2, kurtosis)
+
+# Combine the results into a single data frame
+Returns_crypto_results<- data.frame(mean = Mean1, median = Median1, variance = Variance1,skewness = Skewness1, kurtosis = Kurtosis1)
+Returns_crypto_quantile_results <- (quantile = Quantile1)
+# Print the results
+print(Returns_crypto_results)
+print(Returns_crypto_quantile_results)
+```
+OUTPUT EXPLANATION:
+
+•	The  mean value is the highest for BNB indicating that it has the highest return on an average daily, whereas it is the lowest for USDT indicating that the average return aon a daily basis is low.
+• The median is almost  zero indicating that the distribution is  symmetric and BNB has the highest return.
+• The variance is more dispersed and the variance is high for XRP indicating that it is more volatile whereas it is less volatile for USDT.
+• The return of XRP us more symmetric and has somewhat less kurtosis
+
+OVERALL RESULTS:
+
+By comparing the results of traditional assets and crypto-currencies we can say that the the average returns is higher for traditional assets and most of the traditional assets have almost negative skewness, indicating that they have larger returns in comparison to crypto-currencies.The median return is also highest for the traditional assets. The kurtosis is higher for all returns, but in comparison it is higher for Cryptos then for traditional assets, indicating that the they have extreme outliers in their returns. The variance of returns is also higher for cryptos indicating that they have high level of risks.
+
+*Checking if the data is normally distributed using univariate tests*
+
+*UNIVARIATE TESTS*
+ 
+*TRADITIONAL FINANCE*
+
+*VNQ*
+
+```{r}
+returnvnq2 = fortify.zoo(returnvnq)
+summary(returnvnq2)
+```
+
+SHAPIRO-WILK 
+
+```{r}
+shapiro.test((returnvnq2$VNQ.Close))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+
+non_numeric <- which(!is.numeric(returnvnq2))
+returnvnq2 <- returnvnq2[-non_numeric]
+ks.test(returnvnq2, "pnorm")
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returnvnq2$VNQ.Close) 
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returnvnq, alternative = "two.sided")
+```
+
+Since p value is less than 0.05, we can reject H0, implying that the return is skewed.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returnvnq, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returnvnq, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST 
+
+```{r}
+ad.test(returnvnq2$VNQ.Close,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+Hence, the VNQ data is not normally distributed.
+
+*PG*
+```{r}
+returnpg2 = fortify.zoo(returnpg)
+summary(returnpg2)
+```
+
+SHAPIRO-WILK
+
+```{r}
+shapiro.test((returnpg2$PG.Close))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+returnpg2 <- returnpg2[-non_numeric]
+non_numeric <- which(!is.numeric(returnpg2))
+ks.test(returnpg, "pnorm")
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returnpg2$PG.Close)  
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returnpg, alternative = "two.sided")
+```
+Since p value is greater than 0.05, we can reject HA, implying that the return is not skwewed significantly
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+```{r}
+anscombe.test(returnpg, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returnpg, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returnpg2$PG.Close,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution
+
+Hence, the PG data is not normally distributed.
+
+*KR*
+
+```{r}
+returnkr2 = fortify.zoo(returnkr)
+summary(returnkr2)
+```
+
+SHAPIRO-WILK 
+
+```{r}
+shapiro.test((returnkr2$KR.Close))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+ 
+ KOLMOGOROV-SMIRNOV
+ 
+```{r}
+returnkr2 <- returnkr2[-non_numeric]
+ks.test(returnkr2, "pnorm")
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST 
+
+```{r}
+jarqueberaTest(returnkr2$KR.Close)  
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS 
+
+```{r}
+agostino.test(returnkr, alternative = "two.sided")
+```
+
+Since p value is greater than 0.05, we can reject HA, implying that the return is not skewed significantly.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returnkr, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returnkr, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returnkr2$KR.Close,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+Hence, the KR data is not normally distributed.
+
+*CVX*
+
+```{r}
+returncvx2 = fortify.zoo(returncvx)
+summary(returncvx2)
+```
+
+SHAPIRO-WILK
+
+```{r}
+shapiro.test((returncvx2$CVX.Close))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+returncvx2 <- returncvx2[-non_numeric]
+ks.test(returncvx2, "pnorm")
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST 
+
+```{r}
+jarqueberaTest(returncvx2$CVX.Close)
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+ D'AGOSTINO TEST OF SKEWNESS
+ 
+```{r}
+agostino.test(returncvx, alternative = "two.sided")
+```
+
+Since p value is greater than 0.05, we can reject HA, implying that the return is not skewed significantly.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returncvx, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returncvx, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returncvx$CVX.Close,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+Hence, the CVX data is not normally distributed.
+
+*GOOGL*
+
+```{r}
+returngoogl2 = fortify.zoo(returngoogl)
+summary(returngoogl2)
+```
+
+SHAPIRO-WILK 
+
+```{r}
+shapiro.test((returngoogl2$GOOGL.Close))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+returngoogl2 <- returngoogl2[-non_numeric]
+ks.test(returngoogl2, "pnorm")
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST 
+
+```{r}
+jarqueberaTest(returngoogl2$GOOGL.Close)
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returngoogl, alternative = "two.sided")
+```
+
+Since p value is greater than 0.05, we can reject H0, implying that the return is not skewed significantly.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returngoogl, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returngoogl, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returngoogl$GOOGL.Close,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution
+
+Hence, the GOOGL data is not normally distributed.
+
+The traditional asset data is not normal distributed.
+
+*Cryptocurrency Assets*
+
+*BTC*
+
+```{r}
+returnbtc2 = fortify.zoo(returnbtc)
+summary(returnbtc2)
+```
+
+SHAPIRO-WILK
+
+```{r}
+shapiro.test((returnbtc2$`BTC-USD.Close`))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+ks.test(returnbtc, "pnorm")
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returnbtc2$`BTC-USD.Close`)
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returnbtc, alternative = "two.sided")
+```
+
+Since p value is less than 0.05, we can reject H0, implying that the return is skewed.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returnbtc, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returnbtc, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returnbtc2$`BTC-USD.Close`,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+*USDT_USD*
+
+```{r}
+returnusdt2 = fortify.zoo(returnusdt)
+summary(returnusdt2)
+```
+
+SHAPIRO-WILK
+
+```{r}
+shapiro.test((returnusdt2$`USDT-USD.Close`))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+ KOLMOGOROV-SMIRNOV
+ 
+```{r}
+ks.test(returnusdt, "pnorm")
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returnusdt$`USDT-USD.Close`)
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returnusdt, alternative = "two.sided")
+```
+
+Since p value is less than 0.05, we can reject H0, implying that the return is skewed.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returnusdt, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSI
+
+```{r}
+bonett.test(returnusdt, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returnusdt2$`USDT-USD.Close`,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+*XRP*
+
+```{r}
+returnxrp2 = fortify.zoo(returnuxrp)
+summary(returnxrp2)
+```
+ 
+ SHAPIRO-WILK
+ 
+```{r}
+shapiro.test((returnxrp2$`XRP-USD.Close`))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+ks.test(returnuxrp, "pnorm")
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returnxrp2$`XRP-USD.Close`)
+```
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+D'AGOSTINO TEST OF SKEWNESS
+```{r}
+agostino.test(returnuxrp, alternative = "two.sided")
+```
+
+Since p value is greater than 0.05, we do not reject H0, implying that the return is skewed.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returnuxrp, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returnuxrp, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returnxrp2$`XRP-USD.Close`,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+*BNB*
+
+```{r}
+returnbnb2 = fortify.zoo(returnbnb)
+summary(returnbnb2)
+```
+
+SHAPIRO-WILK
+
+```{r}
+shapiro.test((returnbnb2$`BNB-USD.Close`))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+ks.test(returnbnb, "pnorm")
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returnbnb2$`BNB-USD.Close`)
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returnbnb, alternative = "two.sided")
+```
+
+Since p value is greater than 0.05, we do not reject H0, implying that the return is skewed.
+
+ ANSCOMBE-GLYNN TEST OF KURTOSIS
+ 
+```{r}
+anscombe.test(returnbnb, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returnbnb, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returnbnb2$`BNB-USD.Close`,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+*ETH*
+
+```{r}
+returneth2 = fortify.zoo(returneth)
+summary(returneth2)
+```
+ 
+ SHAPIRO-WILK 
+ 
+```{r}
+shapiro.test((returneth2$`ETH-USD.Close`))
+```
+
+Therefore p value is <0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+KOLMOGOROV-SMIRNOV
+
+```{r}
+ks.test(returneth, "pnorm")
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+JARQUE-BERA TEST
+
+```{r}
+jarqueberaTest(returneth2$`ETH-USD.Close`)
+```
+
+Since p value is lower than 0.05, we can reject H0, hence the distribution of data is significantly different from the normal distribution.
+
+D'AGOSTINO TEST OF SKEWNESS
+
+```{r}
+agostino.test(returneth, alternative = "two.sided")
+```
+
+Since p value is greater than 0.05, we can reject H0, implying that the return is skewed.
+
+ANSCOMBE-GLYNN TEST OF KURTOSIS
+
+```{r}
+anscombe.test(returneth, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess kurtosis relatively to the normal distribution.
+
+BONETT-SERIE TEST OF KURTOSIS
+
+```{r}
+bonett.test(returneth, alternative = "two.sided")
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+ANDERSON-DARLING GOODNESS OF FIT TEST
+
+```{r}
+ad.test(returneth2$`ETH-USD.Close`,plnorm)
+```
+
+Since p value is lower than 0.05, we can reject H0, implying that the return exhibits excess Gery's measure of kurtosis relative to the normal distribution.
+
+All the above univariate tests for Cryptocurrency suggests that the the distribution of the above crypto datas doesn't follow a normal distribution.
+
+As the data is not normally distributed, we should perform the Spearman and Kendell correlation test for testing the correlations of traditional assets.
+
+*Correlation Tests:MULTIVARIATE TESTS*
+
+*Traditional Assets*
+
+```{r}
+# Calculate Log return
+Returns <- merge(VNQ$VNQ.Close, PG$PG.Close,KR$KR.Close, CVX$CVX.Close,GOOGL$GOOGL.Close)
+return.together = Return.calculate( Returns, method = "log")
+plot (return.together)
+
+#Convertion into Data Frames
+
+# convert the  xts object into a dataframe
+return.together.df = fortify(return.together) 
+return.together.df = return.together.df [-1,]
+
+# Assign returns to X and Y axis
+`Vanguard Real Estate Index Fund` = return.together.df$VNQ.Close
+`Protecter and Gamble Co` = return.together.df$PG.Close
+`The Kroger Co.`  = return.together.df$KR.Close
+`Chevron Corporation` = return.together.df$CVX.Close
+`Alphabet Inc.` = return.together.df$GOOGL.Close
+
+#Combining all stocks into one dataframe
+traditional_assets <- data.frame(`Vanguard Real Estate Index Fund`,`Protecter and Gamble Co`,`The Kroger Co.`,`Chevron Corporation`,`Alphabet Inc.`)
+
+# Test No: 1. Spearman correlation test on all pairs of variables
+correlation_matrix_t_s <- cor(traditional_assets, method = "spearman")
+correlation_pval_t_s <- matrix(NA, ncol = ncol(correlation_matrix_t_s), nrow = ncol(correlation_matrix_t_s))
+for(i in 1:ncol(correlation_matrix_t_s)) {
+  for(j in 1:ncol(correlation_matrix_t_s)) {
+    test <- cor.test(traditional_assets[, i], traditional_assets[, j], method = "spearman", alternative = "two.sided", conf.level = 0.95)
+    correlation_pval_t_s[i, j] <- test$p.value
+  }
+}
+correlation_table_traditional_spearman <- cbind(correlation_matrix_t_s, correlation_pval_t_s)
+print(correlation_table_traditional_spearman)
+
+
+
+```
+
+OUTPUT RESULTS:
+
+•	Vanguard.Real.Estate.Index.Fund  has the strongest correlation with Protecter.and.Gamble.Co(0.4597573) and Alphabet.Inc.(0.4375143).
+
+•	The correlation is moderate for Chevron.Corporation with Vanguard.Real.Estate.Index.Fund(0.3274068) and Alphabet.Inc.(0.32327911).
+
+•	It is weakest for The.Kroger.Co.  and Alphabet.Inc.(0.09720337).
+
+•	The.Kroger.Co. has weak correlation coefficient with Chevron.Corporation(0.1620807). and Protecter.and.Gamble.Co with Chevron.Corporation(0.1460707).
+
+```{r}
+# Test No: 2. Kendall correlation test on all pairs of variables
+correlation_matrix_c_k <- cor(traditional_assets, method = "kendal")
+correlation_pval_c_k <- matrix(NA, ncol = ncol(correlation_matrix_c_k), nrow = ncol(correlation_matrix_c_k))
+for(i in 1:ncol(correlation_matrix_c_k)) {
+  for(j in 1:ncol(correlation_matrix_c_k)) {
+    test2 <- cor.test(traditional_assets[, i], traditional_assets[, j], method = "kendal", alternative = "two.sided", conf.level = 0.95)
+    correlation_pval_c_k[i, j] <- test2$p.value
+  }
+}
+correlation_table_traditional_kendall <- cbind(correlation_matrix_c_k, correlation_pval_c_k)
+print(correlation_table_traditional_kendall)
+
+```
+
+OUTPUT RESULTS:
+
+• The correlation coefficient is higher for Vanguard.Real.Estate.Index.Fund and Protecter.and.Gamble.Co(0.32355054).
+
+• The correlation coefficient is lowest for The.Kroger.Co. and Alphabet.Inc.(0.06606054).
+
+*Crypto Assets*
+
+```{r}
+# Calculate Log return
+Returns_cryptos <- merge(`BTC-USD`$`BTC-USD.Close`, `USDT-USD`$`USDT-USD.Close`,`XRP-USD`$`XRP-USD.Close`,`BNB-USD`$`BNB-USD.Close`,`ETH-USD`$`ETH-USD.Close`)
+return1.together = Return.calculate( Returns_cryptos, method = "log")
+plot (return1.together)
+
+#Convertion into Data Frames
+# convert the  xts object into a dataframe
+return1.together.df = fortify(return1.together) 
+return1.together.df = return1.together.df [-1,]
+
+# Assign returns to X and Y axis
+Bitcoin  = return1.together.df$BTC.USD.Close
+Tether = return1.together.df$USDT.USD.Close
+XRP  = return1.together.df$XRP.USD.Close
+BNB = return1.together.df$BNB.USD.Close
+Ethereum = return1.together.df$ETH.USD.Close
+
+#Combining all stocks into one dataframe
+crypto_assets <- data.frame(Bitcoin,Tether,XRP,BNB,Ethereum)
+
+```
+
+```{r}
+# Test No: 1. Spearman correlation test on all pairs of variables
+correlation_matrix_c_s <- cor(crypto_assets, method = "spearman")
+correlation_pval_c_s <- matrix(NA, ncol = ncol(correlation_matrix_c_s), nrow = ncol(correlation_matrix_c_s))
+for(i in 1:ncol(correlation_matrix_c_s)) {
+  for(j in 1:ncol(correlation_matrix_c_s)) {
+    test3 <- cor.test(crypto_assets[, i], crypto_assets[, j], method = "spearman", alternative = "two.sided", conf.level = 0.95)
+    correlation_pval_c_s[i, j] <- test3$p.value
+  }
+}
+correlation_table_crypto_spearman <- cbind(correlation_matrix_c_s, correlation_pval_c_s)
+print(correlation_table_crypto_spearman)
+```
+
+OUTPUT RESULTS:
+•	From the above we can see that BITCOIN has strong correlation with the other cyptos: Ethereum(0.82173417), BNB(0.67839476) and XRP(0.69686688).
+
+•	XRP also has high correlation with ETH(0.75316870) and BNB(0.63018198).
+
+•	ETH has high correlation with BNB(0.71317479).
+
+•	Tether has weak correlation with all the crypto stocks.
+
+```{r}
+# Test No: 2. Kendall correlation test on all pairs of variables
+correlation_matrix_c_k <- cor(crypto_assets, method = "kendal")
+correlation_pval_c_k <- matrix(NA, ncol = ncol(correlation_matrix_c_k), nrow = ncol(correlation_matrix_c_k))
+for(i in 1:ncol(correlation_matrix_c_k)) {
+  for(j in 1:ncol(correlation_matrix_c_k)) {
+    test4 <- cor.test(crypto_assets[, i], crypto_assets[, j], method = "kendal", alternative = "two.sided", conf.level = 0.95)
+    correlation_pval_c_k[i, j] <- test4$p.value
+  }
+}
+correlation_table_crypto_kendall <- cbind(correlation_matrix_c_k, correlation_pval_c_k)
+print(correlation_table_crypto_kendall)
+```
+
+OUTPUT RESULTS:
+•	From the above we can see that BITCOIN has strong correlation with the other cyptos: Ethereum(0.64671154), BNB(0.50647390) and XRP(0.53044486).
+
+•	XRP also has high correlation with ETH(0.58433361) and BNB(0.46803832).
+
+•	ETH has high correlation with BNB(0.53891495).
+
+•	Tether has weak correlation with all the crypto stocks.
+
+Note: The two-sample t-test could not be conducted on both the financial and crypto assets as they are not normally distributed.
+
+*CAUSALITY*
+
+*GRANGER CAUSALITY AND INSTANTANEOUS CAUSALITY*
+
+The causality is run for return prices to understand if one price change effect the others price. As we are comparing the traditional assets and cryptocurrencies, the comparision is done seperately.
+
+*Traditional Assets*
+
+```{r}
+# Storing the  daily returns
+Returns_List <- list()
+max_lags <- 10
+
+# Initializing list to store the return values
+Returns_List_traditional <- vector(mode = "list", length = length(traditional_time_series))
+names(Returns_List_traditional) <- traditional_time_series
+
+# loop over series and store returns
+for (i in seq_along(traditional_time_series)) {
+  series <- traditional_time_series[i]
+  data <- getSymbols(series, from = "2018-05-01", to = "2023-05-07", warnings = FALSE, auto.assign = FALSE)
+  price <- Ad(data)
+  Returns <- diff(log(price))[-1]
+  Returns_List_traditional[[i]] <- na.omit(Returns)
+}
+
+# loop over pairs of tickers and perform Granger causality test
+for (i in seq_along(traditional_time_series)) {
+  for (j in seq_len(i - 1)) {
+    data <- na.omit(cbind(Returns_List_traditional[[i]], Returns_List_traditional[[j]]))
+    if (nrow(data) >= (max_lags + 1)) {
+      lag_selection <- VARselect(data, lag.max = max_lags, type = "both")
+      optimal_lag_aic <- lag_selection$selection["AIC(n)"]
+      model_aic <- VAR(data, p = optimal_lag_aic)
+      granger_test <- causality(model_aic, cause = colnames(data)[2])
+      cat("\nGranger causality test between", colnames(data)[1], "and", colnames(data)[2], ":\n")
+      print(granger_test)
+    }
+  }
+}
+```
+
+OUTPUT RESULTS:
+There is a significant causality between VNQ and PG, KR and VNQ, KR and PG, CVX and VNQ, CVX and PG , CVX and KR, GOOGL and VNQ and GOOGL and PG assets.
+
+Overall we can say that the past results of one stock are helpful and is somewhat causal in predicting the price values of another asset.
+
+*Crypto Assets*
+
+```{r}
+# Storing the  daily returns
+Returns_List_cryptocurrencies <- list()
+max_lags1 <- 10
+
+# Initializing list to store the return values
+Returns_List_cryptocurrencies <- vector(mode = "list", length = length(cryptocurrencies_time_series))
+names(Returns_List_cryptocurrencies) <- cryptocurrencies_time_series
+
+# loop over series and store returns
+for (i in seq_along(cryptocurrencies_time_series)) {
+  series <- cryptocurrencies_time_series[i]
+  data <- getSymbols(series, from = "2018-05-01", to = "2023-05-07", warnings = FALSE, auto.assign = FALSE)
+  price <- Ad(data)
+  Returns <- diff(log(price))[-1]
+  Returns_List_cryptocurrencies[[i]] <- na.omit(Returns)
+}
+
+# loop over pairs of tickers and perform Granger causality test
+for (i in seq_along(traditional_time_series)) {
+  for (j in seq_len(i - 1)) {
+    data <- na.omit(cbind(Returns_List_cryptocurrencies[[i]], Returns_List_cryptocurrencies[[j]]))
+    if (nrow(data) >= (max_lags1 + 1)) {
+      lag_selection <- VARselect(data, lag.max = max_lags1, type = "both")
+      optimal_lag_aic <- lag_selection$selection["AIC(n)"]
+      model_aic <- VAR(data, p = optimal_lag_aic)
+      granger_test <- causality(model_aic, cause = colnames(data)[2])
+      cat("\nGranger causality test between", colnames(data)[1], "and", colnames(data)[2], ":\n")
+      print(granger_test)
+    }
+  }
+}
+```
+
+OUTPUT EXPLANATION:
+There is a significant causality between USDT and BTC, BTC and XRP, USDT and XRP,  USDT and BNB, XRP and BNB, USDT and ETH.
+
+There is no significant causality between ETH and BTC, BTC and BNB.
+
+Overall we can say that the past results of one crypto stock is helpful and is somewhat causal in predicting the price values of some other asset but not for all.
+
+OVERALL OUTPUT OF CAUSALITY ON COMPARISION:
+
+Based on the selection of our assets, the causality is stronger for the traditional assets and is somewhat a mix and directionless for crypto assets.
+
+*VOLATILITY TESTS*
+
+Forming Time-series of all the assets:
+
+```{r}
+#VNQ
+VNQ.ts<-ts(VNQ$VNQ.Close,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(VNQ.ts)
+vnq_decomposition <- stl(VNQ.ts, s.window = "periodic")
+plot(vnq_decomposition)
+
+#PG
+PG.ts<-ts(PG$PG.Close,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(PG.ts)
+pg_decomposition <- stl(PG.ts, s.window = "periodic")
+plot(pg_decomposition)
+
+#KR
+KR.ts<-ts(KR$KR.Close,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(KR.ts)
+kr_decomposition <- stl(KR.ts, s.window = "periodic")
+plot(kr_decomposition)
+
+#CVX
+CVX.ts<-ts(CVX$CVX.Close,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(CVX.ts)
+cvx_decomposition <- stl(CVX.ts, s.window = "periodic")
+plot(cvx_decomposition)
+
+#GOOGL
+GOOGL.ts<-ts(GOOGL$GOOGL.Close,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(GOOGL.ts)
+googl_decomposition <- stl(GOOGL.ts, s.window = "periodic")
+plot(googl_decomposition)
+
+BTC.ts<-ts(`BTC-USD`$`BTC-USD.Close`,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(BTC.ts)
+ETH.ts<-ts(`ETH-USD`$`ETH-USD.Close`,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(ETH.ts)
+USDT.ts<-ts(`USDT-USD`$`USDT-USD.Close`,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(USDT.ts)
+XRP.ts<-ts(`XRP-USD`$`XRP-USD.Close`,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(XRP.ts)
+BNB.ts<-ts(`BNB-USD`$`BNB-USD.Close`,start = c(2018,1),end=c(2023,5),frequency=365)
+plot(BNB.ts)
+```
+
+*Traditional Assets*
+
+1.ACF tests:
+```{r}
+
+acf(VNQ.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for VNQ")
+acf(PG.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for PG")
+acf(KR.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for KR")
+acf(CVX.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for CVX")
+acf(GOOGL.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for GOOGL")
+```
+2.Box lunge Tests:
+
+```{r}
+Box.test(VNQ.ts, lag = 50, type = "Ljung-Box")
+Box.test(PG.ts, lag = 50, type = "Ljung-Box")
+Box.test(KR.ts, lag = 50, type = "Ljung-Box")
+Box.test(CVX.ts, lag = 50, type = "Ljung-Box")
+Box.test(GOOGL.ts, lag = 50, type = "Ljung-Box")
+```
+
+OUTPUT REUSLTS:
+
+All the traditional assets are highly auto-correlated.
+
+3.ARIMA TEST:
+
+```{r}
+fitARVNQ = arima(VNQ.ts, order = c(1,0,0))
+print(fitARVNQ)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for VNQ asset.
+fitARPG = arima(PG.ts, order = c(1,0,0))
+print(fitARPG)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for PG asset.
+fitARKR = arima(KR.ts, order = c(1,0,0))
+print(fitARKR)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for KR asset.
+fitARCVX = arima(CVX.ts, order = c(1,0,0))
+print(fitARCVX)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for CVX asset.
+fitARGOOGL = arima(GOOGL.ts, order = c(1,0,0))
+print(fitARGOOGL)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for GOOGL asset.
+
+```
+
+We can conclude that today's return influences tomorrow's prediction for traditional assets.
+
+As there is a strong dependence of sudden variabilities on asset returns past, ARCH model should also be used to analyze the returns.
+
+4. GARCH:
+
+Note: For the easiness of R_Notebook compilation in HTML file and the current limitations in R_Notebook, the below plot commands are commented:
+
+1)plot (vnq.garch.norm)
+2)plot (kr.garch.norm)
+3)plot (cvx.garch.norm)
+4)plot (googl.garch.norm)
+5)plot (pg.garch.norm)
+6)plot (btc.garch.norm)
+7)plot (eth.garch.norm)
+8)plot (usdt.garch.norm)
+9)plot (xrp.garch.norm)
+10)plot (bnb.garch.norm)
+
+```{r}
+arma.garch.norm = ugarchspec(mean.model=list(armaOrder=c(1,0)), variance.model=list(garchOrder=c(1,1)))
+# For VNQ
+vnq.garch.norm = ugarchfit(data=VNQ.ts, spec=arma.garch.norm)
+show(vnq.garch.norm)
+```
+
+
+```{r}
+#plot (vnq.garch.norm)
+```
+
+Log likelihood of model: -3289.514 .
+AIC = 3.6006
+BIC = 3.6156
+
+```{r}
+# For PG
+pg.garch.norm = ugarchfit(data=PG.ts, spec=arma.garch.norm)
+show(pg.garch.norm)
+#plot (pg.garch.norm)
+```
+
+Log likelihood of model: -2626.509.
+AIC = 2.8760
+BIC = 2.8910
+
+```{r}
+# For KR
+kr.garch.norm = ugarchfit(data=KR.ts, spec=arma.garch.norm)
+show(kr.garch.norm)
+#plot (kr.garch.norm)
+```
+
+Log likelihood of model: -2023.8.
+AIC = 2.2173
+BIC = 2.2323
+
+```{r}
+# For CVX
+cvx.garch.norm = ugarchfit(data=CVX.ts, spec=arma.garch.norm)
+show(cvx.garch.norm)
+#plot (cvx.garch.norm)
+```
+
+Log likelihood of model: -3989.179.
+AIC = 4.3652
+BIC = 4.3803
+
+```{r}
+# For GOOGL
+googl.garch.norm = ugarchfit(data=GOOGL.ts, spec=arma.garch.norm)
+show(googl.garch.norm)
+#plot (googl.garch.norm)
+```
+
+Log likelihood of model: -3714.054.
+AIC = 4.0645
+BIC = 4.0796
+
+OUTPUT RESULTS:
+Comparing the AIC and BIC values we can say that the KR has the highest likelihood, indicating that it is a good fitted data and has lowest AIC and BIC values, meaning it is the best fitted model. 
+
+OVERALL OUTPUT OF TRADITIONAL ASSETS ON VOLATILITY:
+
+All the traditional asssets have positive volatility meaning that they expereince some amount of fluctuations in the 5 year period. The volatility is the highest for Alphabet Inc. whereas it is the lowest for Procter and Gamble Co.
+
+*Crypto Assets*
+
+1.ACF Tests
+
+```{r}
+acf(BTC.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for BTC")
+acf(ETH.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for ETH")
+acf(USDT.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for USDT")
+acf(XRP.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for XRP")
+acf(BNB.ts, lag = 50, type = "correlation", plot = TRUE, main = "ACF for BNB")
+```
+
+2. Box lunge Tests
+
+```{r}
+Box.test(BTC.ts, lag = 50, type = "Ljung-Box")
+Box.test(ETH.ts, lag = 50, type = "Ljung-Box")
+Box.test(USDT.ts, lag = 50, type = "Ljung-Box")
+Box.test(XRP.ts, lag = 50, type = "Ljung-Box")
+Box.test(BNB.ts, lag = 50, type = "Ljung-Box")
+```
+
+OUTPUT REUSLTS:
+
+All the crypto assets are highly auto-correlated.
+
+3.ARIMA TEST:
+
+```{r}
+fitARBTC = arima(BTC.ts, order = c(1,0,0))
+print(fitARBTC)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for BTC asset.
+fitARETH = arima(ETH.ts, order = c(1,0,0))
+print(fitARETH)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for PG asset.
+fitARUSDT = arima(USDT.ts, order = c(1,0,0))
+print(fitARUSDT) ##check this again for correction.
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for KR asset.
+fitARXRP = arima(XRP.ts, order = c(1,0,0))
+print(fitARXRP)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for CVX asset.
+fitARBNB = arima(BNB.ts, order = c(1,0,0))
+print(fitARBNB)
+#The value of φ is non zero and the return of today could be used for tomorrow's prediction and as the value is high, the prediction would be accurate for GOOGL asset.
+```
+
+We conclude that today's return influences tomorrow's returns for cyptocurrencies.
+
+As there is a strong dependence of sudden variabilities on asset returns past, ARCH model should also be used.
+
+4.GARCH model
+
+```{r}
+# For BTC
+btc.garch.norm = ugarchfit(data=BTC.ts, spec=arma.garch.norm)
+show(btc.garch.norm)
+length (BTC.ts)
+#plot (btc.garch.norm)
+```
+
+Log likelihood of model: -14792.96.
+AIC = 16.173
+BIC = 16.188
+
+```{r}
+# For ETH
+eth.garch.norm = ugarchfit(data=ETH.ts, spec=arma.garch.norm)
+show(eth.garch.norm)
+length (ETH.ts)
+#plot (eth.garch.norm)
+```
+
+Log likelihood of model: -8866.236.
+AIC = 9.6953
+BIC = 9.7104
+
+```{r}
+# For USDT
+usdt.garch.norm = ugarchfit(data=USDT.ts, spec=arma.garch.norm)
+show(usdt.garch.norm)
+length (USDT.ts)
+#plot (usdt.garch.norm)
+```
+
+Log likelihood of model: 9516.749
+AIC = -10.395
+BIC = -10.380
+
+```{r}
+# For XRP
+xrp.garch.norm = ugarchfit(data=XRP.ts, spec=arma.garch.norm)
+show(xrp.garch.norm)
+length (XRP.ts)
+#plot (xrp.garch.norm)
+```
+
+Log likelihood of model: 4463.064 
+AIC = -4.8722
+BIC = -4.8571
+
+
+```{r}
+# For BNB
+bnb.garch.norm = ugarchfit(data=BNB.ts, spec=arma.garch.norm)
+show(bnb.garch.norm)
+length (BNB.ts)
+#plot (bnb.garch.norm)
+```
+
+Log likelihood of model: -4613.314
+AIC = 5.0473
+BIC = 5.0624
+
+OUTPUT EXPLANATION:
+Comparing the AIC and BIC values we can say that the BNB has the least AIC and BIC values, meaning it is the best fitted model, whereas BTC having the highest BIC and AIC values is the worst fitted model.
+
+
+OVERALL OUTPUT OF CRYPTO ASSETS ON VOLATILITY:
+
+Based on the above values, the average daily volatility is the highest for ethereum(0.075%), and the second highest is for Bitcoin(0.067%). USDT has the least volatility around. 0.001%.
+
+OVERALL COMPARISION OF VOLATILITY:
+
+Overall, we see that the volatility is highest for the crypto assets and is the lowest for traditional assets. However, googl(Alphabet Inc.) is an exclusion in traditional assets having high volatility, it could be attributed to many factor influences like news and events and mareket trends. It belonging to the technology sector is more susceptible to fluctuations based on investor sentiment as well. On the contrary, USDT(Tether) has the lowest volatility. It could be because it is a stablecoin and is always equivalent to US dollar and is maintained by Tether Limited.
+
+*PCA(Principal Component Analysis)*
+
+*Traditional Assets*
+
+```{r}
+TraditionalReturns = return.together.df
+TraditionalReturns = diff(as.matrix(TraditionalReturns[,2:6])) # diff the data
+diffTR = na.omit(TraditionalReturns) # omit all NAs in diff dataset
+n = dim(TraditionalReturns)[1] # a number of observations
+
+pca = prcomp(diffTR) # Performs a principal components analysis on the given data matrix and returns the results as an object of class prcomp.
+summary(diffTR) # return the statistics
+plot(pca,main="(a)")
+Names = names(TraditionalReturns)[2:9]
+plot(pca$rotation[,1],type="b",ylab="PC",lwd=2,ylim=c(-1.4,2),main="(b)")
+lines(pca$rotation[,2],type="b",lty=2,lwd=2,col="red")
+lines(pca$rotation[,3],type="b",lty=3,lwd=2,col="blue")
+lines(0:9,0*(0:9))
+legend("top",c("PC1","PC2","PC3"),lty=c(1,2,3),lwd=2,cex=.65,col=c("black", "red", "blue"))
+text(2.00,-1.25, "   VNQ   PG   KR   INDIA   CVX   GOOGL",cex=.60)
+```
+OUTPUT RESULTS:
+The first PC has the highest weights. The order of PCn is PC1>PC2>PC3>PC4>PC5. PC1 explains 44.48% of data, PC2 explains 26.79% of data and PC3 explains 23.40% of data
+
+*Crypto Assets*
+
+```{r}
+CryptoReturns = return1.together.df
+CryptoReturns = diff(as.matrix(CryptoReturns[,2:6])) # diff the data
+diffCR = na.omit(CryptoReturns) # omit all NAs in diff dataset
+n = dim(CryptoReturns)[1] # a number of observations
+
+pcac = prcomp(diffCR) # Performs a principal components analysis on the given data matrix and returns the results as an object of class prcomp.
+summary(diffCR) # return the statistics
+plot(pcac,main="(a)")
+Names = names(TraditionalReturns)[2:9]
+plot(pcac$rotation[,1],type="b",ylab="PC",lwd=2,ylim=c(-1.4,2),main="(b)")
+lines(pcac$rotation[,2],type="b",lty=2,lwd=2,col="red")
+lines(pcac$rotation[,3],type="b",lty=3,lwd=2,col="blue")
+lines(0:9,0*(0:9))
+legend("top",c("PC1","PC2","PC3"),lty=c(1,2,3),lwd=2,cex=.65,col=c("black", "red", "blue"))
+text(2.55,-1.25, " BTC            USDT                 XRP                    BNB          ETH  ",cex=.60)
+```
+RESULTS:
+The first PC has the highest weights. The order of PCn is PC1>PC2>PC3>PC4>PC5. PC1 explains 12.46% of data, PC2 explains 4.84% of data and PC3 explains 3.79% of data.
+
+OVERALL COMPARISON:
+
+In comparison, the traditional assets are showing more variability in the data as the top 3 Principal components explain about 90% of variance whereas crypto-currencies has less variability as the top 3 explanations are comparatively less.
+
+ 
+                                 **FACTOR MODEL**
+                                 
+Factor loadings are required for determining the strength and direction of each stock's linkages with other equities. It is mostly used to comprehend the relationship between the variable's strength and the underlying causes that determine its value. It has a value between -1 and 1. The positive number denotes a strong positive relationship, the negative value shows a strong negative relationship, and the value near to 0 represents a weak association. In finance, it helps investors to understand how one stock is affected by different underlying factors.
+                          
+*STATISTICAL FACTOR MODELS*  
+
+*Traditional Assets*
+
+```{r}
+#Factor analysis of traditional assets
+return.together[is.na(return.together) | !is.finite(return.together)] <- 0
+#1. 2 factor model without rotation
+fa_none = factanal(return.together[,1:5],2,rotation="none") 
+print(fa_none,cutoff=0.1)
+```
+
+RESULTS:
+
+Since, there are 2 factors and 5 assets, the result is a 5*2 matrix.The uniquenesses value is the highest for Kr.Close indicating that it is more unique than the others.The uniqueness value is the least for PG suggesting that it is less unique than the other stock prices in the list. The factor 1 explains most percentage of variance(32%) whereas the Factor2 represents the second(20.8%). The Factor 1 has large loadings on 2 assets PG.CLose, Kr.CLose. The factor 2 has large loadings for VNQ,CVX and GOOGL. 
+
+```{r}
+#2. VARIMAX on Traditional assets
+#factor model with rotation
+fa_vari = factanal(return.together[,1:5],2,rotation="varimax") 
+print(fa_vari,cutoff=0.1,sort=T)
+print(fa_vari,cutoff=0.1)
+sum(fa_vari$loadings[,1]^2)
+# actor loadings
+B=fa_vari$loadings[,] 
+```
+
+RESULTS:
+
+Since, there are 2 factors and 5 assets, the result is a 5*2 matrix.The uniquenesses value is the highest for Kr.Close indicating that it is more unique than the others.The uniqueness value is the least for PG suggesting that it is less unique than the other stock prices in the list. The factor 1 explains most percentage of variance whereas the Factor2 represents the second. The Factor 1 has large loadings on 3 assets VNQ.CLose, CVX.CLose, GOOGL.CLose. The factor 2 has large loadings for 2 assets PG.CLose and Kr.Close. 
+
+*Crypto Assets*
+
+```{r}
+#Factor analysis of crypto assets
+return1.together[is.na(return1.together) | !is.finite(return1.together)] <- 0
+#1. 2-factor model without rotation
+fa_none1 = factanal(return1.together[,1:5],2,rotation="none")
+print(fa_none1,cutoff=0.1)
+```
+
+RESULTS:
+
+Since, there are 2 factors and 5 assets, the result is a 5*2 matrix.The uniquenesss' value is the highest for USDT.Close indicating that it is more unique than the others.The uniqueness value is the least for BTC.Close suggesting that it is less unique than the other stock prices in the list. The factor 1 explains most percentage of variance  whereas the Factor2 represents the second. The Factor 1 has large loading on 4 assets BTC.Close, XRP.CLose, BNB.CLose and ETH.Close. The factor 2 has large loadings for USDT.Close.
+
+```{r}
+#2.VARIMAX on Crypto assets
+fa_vari1 = factanal(return1.together[,1:5],2,rotation="varimax") #factor model with rotation
+print(fa_vari1,cutoff=0.1,sort=T)
+print(fa_vari1,cutoff=0.1)
+sum(fa_vari1$loadings[,1]^2)
+B=fa_vari1$loadings[,] # factor loadings
+```
+
+RESULTS:
+
+Since, there are 2 factors and 5 assets, the result is a 5*2 matrix.The uniquenesses value is the highest for USDT-USD.Close indicating that it is more unique than the others.The uniqueness value is the least for BTC suggesting that it is less unique than the other stock prices in the list. The factor 1 explains most percentage of variance whereas the Factor2 represents the second. The Factor 1 has large loadings on 4 assets BTC_USD.CLose, XRP_USD.CLose, BNB_USD.CLose and ETH_USD.CLose. The factor 2 has large loadings for 1 assets USDT. 
+
+COMPARISION:
+
+KR returns are not related to the extracted factors whereas PG returns are strongly related to the extracted factors.PG and VNQ have high loading indicating that their return is positively correlated.
+
+USDT returns are not related to the extracted factors whereas BTC returns are strongly related to the extracted factors. BTC and BNB have high loading indicating that their return is positively correlated.
+
+Overall, the traditional assets are relatively strongly related to the extracted factors in comparison to the crypto assets.The factor 1 loading is high for Cryptos whereas the factor 2 loadings are high for traditional asstes.But as factor 1 accounts for large proportion of variances, it should be considered in the explanation. So, the conclusion is that cryptos returns are more positively correlated.
+
+However, it is difficult to make a decision solely based on these results as the models are fairly simpler and non-realistic. For further analysis, economic factor model is performed.
+
+
+*Economic Factors*
+
+Economic elements such as inflation rate and News Based Economic Policy play an important part in evaluating and acquiring stock and crypto powers. Changes in legislation and tax systems arise as a result of changes in News-Based Economic Policy, which affects firm profitability and stock purchasing behavior.It happens because every market is susceptible to news, such as favorable news regarding economic policies, which prompts investors to be more optimistic in the economy and thus acquire more volume of stocks, and as a result of more purchases, the price of the stock may rise and investors may receive better profits.Negative news, on the other hand, causes investors to withdraw their money from stocks and cryptos, resulting in a fall in the volume purchased and low prices. Inflationary pressures might harm the economy, stocks, and consumers. Individuals' spending patterns are affected, and they tend to avoid acquiring non-essential products.  During this period, only value stocks such as commodities and consumer defensives may perform well. Twitter, being one of the most popular social media platforms for people to express their thoughts, plays an essential part in the sentiment management of crypto-currency and stock transactions. However, the most significant influence may be seen in the crypto-currency market. When there is political or economic uncertainty, people flock to Twitter to express themselves through tweets. This news spreads to different investors, forcing them to sell their shares, and if a notable individual does this, the asset becomes a part of herdings. 
+
+Based on the above research, for the economic factor analysis of Traditional assets, Inflation index, News based uncertibity index is considered whereas for crypto assets all three factors i.e., Inflation, News based Uncertainity and Twitter economic uncertainity has been considered.
+
+*ECONOMIC FACTOR MODELS*
+
+Data Loading for Factor Analysis
+
+```{r}
+#Inflation Data Load
+
+Inflation.df <- read_excel("InflationIndex.xls")
+colnames(Inflation.df)[1] <- "ObservationDate"
+colnames(Inflation.df)[2] <- "Index"
+Inflation.df <- na.omit(Inflation.df)
+Inflation = as.matrix(Inflation.df$Index)
+#View(Inflation.df)
+# log difference
+Inflationindex = as.data.frame(diff(log(Inflation)))
+names(Inflationindex)[1]="Inflationindex"
+Inflationindex <- na.omit(Inflationindex)
+
+#NewsBasedEconomic Poilicy Data Load
+
+News_BasedEPUIndex.df <- read_excel("NewsbasedEconomicPolicy.xlsx")
+News_BasedEPUIndex.df <- News_BasedEPUIndex.df[, -c(1:2)]
+News_BasedEPUIndex.df <- na.omit(News_BasedEPUIndex.df)
+#View(News_BasedEPUIndex.df)
+NBIndex = as.matrix(News_BasedEPUIndex.df[372:436,"News-based Economic Policy Uncertainty Index"])
+# log difference
+NBIndexes = as.data.frame(diff(log(NBIndex)))
+names(NBIndexes)[1]="News_BasedEPUIndex"
+
+#Twitter economic uncertainity Data Load
+
+Twitter_EUIndex.df <- read_excel("Twitter_Economic_Uncertainty.xlsx")
+Twitter_EUIndex.df <- Twitter_EUIndex.df[, -c(2:7,9)]
+Twitter_EUIndex.df <- na.omit(Twitter_EUIndex.df)
+#View(Twitter_EUIndex.df)
+TEUIndex = as.matrix(Twitter_EUIndex.df$`TMU-WGT`[2257:4343])
+# log difference
+TEUIndexs = as.data.frame(diff(log(TEUIndex)))
+names(TEUIndexs)[1]="Twitter_BasedMUIndex"
+```
+
+*Traditional Assets*
+
+Model Building 
+
+```{r}
+#Combining the fator for model building of Traditional assets
+nrows <- min(nrow(Inflationindex),nrow(NBIndexes))
+Inflationindex <- Inflationindex[1:nrows,]
+NBIndexes <- NBIndexes[1:nrows,]
+
+#Auto-regressive Model
+arFitIRNBI = ar(cbind(Inflationindex,NBIndexes)) ##AR(1)
+
+#For traditional assets we are considering the inflation index and the news based uncertainity
+
+#Running with the data
+arFitIRNBI$resid <- na.omit(arFitIRNBI$resid)
+restraditional = arFitIRNBI$resid[2:64,]
+return.togetherf = as.matrix(return.together)
+
+#As the dimensions are not equal we are reshaping the object to match teh dimensions of return.togetherf
+res_mattraditional <- suppressWarnings(matrix(restraditional,nrow = nrow(return.togetherf), ncol =2))
+
+# Run the linear regression model
+lmfit_traditional <- lm(return.togetherf[,1:5]~res_mattraditional)
+#Summary of regression model built above
+summarylmfittraditional <- summary(lmfit_traditional)
+print(summarylmfittraditional)
+```
+
+OUTPUT ANALYSIS:
+
+The variances of the unique risks can be estimated from the residual standard errors(RSE) which gives an estimation of the noise in the data that the model is not able to explain. The RSE values are given in detail below:
+VNQ: 0.01577
+PG: 0.01366
+KR: 0.01932
+CVX: 0.02266
+GOOGL:  0.02003
+
+The RSE value is lower for PG indicating that it has less unique risk whereas CVX has comparitively higher value of RSE indicating that it has high unique risks.
+
+The R-squared values of all the traditional assets are very small ranging from 0.0005757 to 0.006133 indicating that the models have very little explanatory power, which also concludes that the asstes did not capture good variability. Among all the models, only Protecter and Gamble Co(PG) and The Kroger Co.(KR) have significant coefficient for the predictor as they have a p-vale of 0.0128 and 0.2259 respectively. Overall, it suggests that the models do not have a strong relationship and thus no  good explanatory power and the stock prices of PG and KR have some relationship but not strong.
+
+*Crypto Assets*
+
+```{r}
+#Combining the factor for model building of Crypto assets
+nrows1 <- min(nrow(Inflationindex),nrow(NBIndexes),nrow(TEUIndexs))
+TEUIndexs <- TEUIndexs[1:nrows1,]
+
+#Auto-regressive Model
+# Replace missing values with 0
+TEUIndexs <- na.replace(TEUIndexs, "interpolate")
+TEUIndexs[is.na(TEUIndexs) | is.infinite(TEUIndexs)] <- 0
+
+#Fitting the AR model using OLS method
+ALL <- c(Inflationindex,NBIndexes,TEUIndexs)
+
+# Fit the AR model using the OLS method
+arFitITNBITEU <- ar(ALL, order = 2, method = "ols")
+
+#Running with the data
+return1.togetherf = as.matrix(return1.together)
+arFitITNBITEU$resid <- na.omit(arFitITNBITEU$resid)
+rescrypto = arFitITNBITEU$resid[3:length(ALL)]
+
+#As the dimensions are not equal we are reshaping the object to match teh dimensions of return.togetherf
+res_matcrypto <- suppressWarnings(matrix(rescrypto,nrow = nrow(return1.togetherf), ncol =2))
+
+# Run the linear regression model
+lmfit_crypto <- lm(return1.togetherf[,1:5]~res_matcrypto)
+#Summary of regression model built above
+summarylmfitcrypto <- summary(lmfit_crypto)
+print(summarylmfitcrypto)
+
+```
+
+OUTPUT ANALYSIS:
+
+The variances of the unique risks can be estimated from the residual standard errors(RSE) which gives an estimation of the noise in the data that the model is not able to explain. The RSE values are given in detail below:
+BTC: 0.0367
+USDT: 0.00353
+XRP: 0.05547
+BNB: 0.05107
+ETH: 0.05731
+
+The RSE value is lower for USDT indicating that it has less unique risk whereas ETH has comparitively higher value of RSE indicating that it has high unique risks.
+
+The R-squared values of all the crypto assets are very small indicating that the models have very little explanatory power, which also concludes that the asstes did not capture good variability. Among all the models, only BNB have significant coefficient for the predictor as its p-value is 0.03267. Also, BNB has a positive R-squared value indicating model explains some data but as adjsted R-squared is small, the model doesn't fit well.
+
+OVERALL ANALYSIS:
+
+Overall, all the assets have poor fit as they have a low R-squared value.However, in comparision, the cryptos have high RSE values indicating that they are more volatile and have high risks. But they also have higher potential return and loss probabilities. The Protecter and Gamble Co. company has the least unique risk associated with it. 
+
+*MONTE CARLO SIMULATION*
+
+```{r}
+#Defining simulation parameters
+
+simulation_number <- 1000
+year_num <- 5
+```
+
+The below code could be used to predict the return of the stocks in the traditional portfolio overall.
+
+*Traditional Assets*
+
+```{r}
+#Monte Carlo simulation code
+#fix the randomness
+set.seed(1224)
+#make a matrix for simulation number and year
+returnsimulated <- matrix(nrow = simulation_number, ncol = year_num )
+#Algorithm
+for (i in 1:simulation_number) {
+  returnsimulated[i,1] <- rnorm(1, mean = mean(return.together[,1]),sd = sd(return.together[,1]))
+  for (j in 2:year_num){
+    returnsimulated[i,j] <- rnorm(1, mean=mean(return.together[,j]), sd=sd(return.together[,j])) + return.together[i,j-1]
+  }
+}
+#Future Value Prediction
+start<- 15000
+future <- matrix(nrow =simulation_number, ncol = year_num+1)
+future[,1] <- start
+for (i in 1:simulation_number) {
+  for (j in 2:(year_num+1)) {
+    future[i,j] <- future[i,j-1]*(1+returnsimulated[1,j-1])
+  }
+}
+
+#Ploting the future values
+plot(0:year_num, colMeans(future), type = "l", ylim = c(0, max(future)), ylab= "Traditional Asset Values", xlab="Year", main = "Monte carlo Simulation for Traditional Asset Returns")
+for(i in 1:simulation_number){
+  lines(0:year_num, future[i,], col=rgb(0,0,1,0.1), lwd=1)
+}
+
+```
+The above prediction is for 5 years for an invested amount of 15000EUR in the traditional portfolio, which shows that the overall returns would decrese.
+
+*Crypto Assets*
+
+The below code could be used to predict the return of the stocks in the cryto portfolio overall.
+
+```{r}
+#Monte Carlo simulation code 
+#fix the randomness
+set.seed(1224)
+#make a matrix for simulation number and year
+returnsimulatedcrypto <- matrix(nrow = simulation_number, ncol = year_num )
+#Algorithm
+for (i in 1:simulation_number) {
+  returnsimulatedcrypto[i,1] <- rnorm(1, mean = mean(return1.together[,1]),sd = sd(return1.together[,1]))
+  for (j in 2:year_num){
+    returnsimulatedcrypto[i,j] <- rnorm(1, mean=mean(return1.together[,j]), sd=sd(return1.together[,j])) + return1.together[i,j-1]
+  }
+}
+#Future Value Prediction
+start<- 15000
+future <- matrix(nrow =simulation_number, ncol = year_num+1)
+future[,1] <- start
+for (i in 1:simulation_number) {
+  for (j in 2:(year_num+1)) {
+    future[i,j] <- future[i,j-1]*(1+returnsimulatedcrypto[1,j-1])
+  }
+}
+
+#Ploting the future values
+plot(0:year_num, colMeans(future), type = "l", ylim = c(0, max(future)), ylab= "Crypto Asset Values", xlab="Year", main = "Monte carlo Simulation for Crypto Asset Returns")
+for(i in 1:simulation_number){
+  lines(0:year_num, future[i,], col=rgb(0,0,1,0.1), lwd=1)
+}
+```
+The above prediction is for 5 years for an invested amount of 15000EUR in the crypto portfolio, which shows that the overall returns would decrease.
+
+The below code could be used to predict the return of the individual returns on a daily basis:
+
+*Vanguard Real Estate Index Fund (VNQ)*
+
+```{r}
+#Defining the parameters
+#Monte Carlo simulation code
+#Daily mean and median calculation
+VNQmean <- mean(dailyReturn(VNQ))
+VNQ_SD <- sd(dailyReturn(VNQ))
+#Set days
+days <- 200
+start_price <- last(VNQ$VNQ.Close)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = VNQmean, sd = VNQ_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1000
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =VNQmean, sd = VNQ_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of Vanguard Real Estate Index Fund (VNQ)", xlab = "Days", ylim = c(50, 170))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+
+```
+*Protecter and Gamble Co(PG)*
+
+```{r}
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+PGmean <- mean(dailyReturn(PG))
+PG_SD <- sd(dailyReturn(PG))
+#Set days
+days <- 200
+start_price <- last(PG$PG.Close)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = VNQmean, sd = VNQ_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1000
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =PGmean, sd = PG_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of Protecter and Gamble Co(PG)", xlab = "Days", ylim = c(50, 300))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*The Kroger Co. (KR)*
+
+```{r}
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+KRmean <- mean(dailyReturn(KR))
+KR_SD <- sd(dailyReturn(KR))
+#Set days
+days <- 200
+start_price <- last(KR$KR.Close)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = KRmean, sd = KR_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1000
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =KRmean, sd = KR_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of The Kroger Co. (KR)", xlab = "Days", ylim = c(10, 110))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*Chevron Corporation (CVX) *
+
+```{r}
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+CVXmean <- mean(dailyReturn(CVX))
+CVX_SD <- sd(dailyReturn(CVX))
+#Set days
+days <- 200
+start_price <- last(CVX$CVX.Close)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = CVXmean, sd = CVX_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =CVXmean, sd = CVX_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of Chevron Corporation (CVX) ", xlab = "Days", ylim = c(50, 350))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*Alphabet Inc. (GOOGL)*
+
+```{r}
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+GOOGLmean <- mean(dailyReturn(GOOGL))
+GOOGL_SD <- sd(dailyReturn(GOOGL))
+#Set days
+days <- 200
+start_price <- last(GOOGL$GOOGL.Close)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = GOOGLmean, sd = GOOGL_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =GOOGLmean, sd = GOOGL_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of Alphabet Inc. (GOOGL)", xlab = "Days", ylim = c(50, 200))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*BTC-USD*
+
+```{r}
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+BTCmean <- mean(dailyReturn(`BTC-USD`))
+BTC_SD <- sd(dailyReturn(`BTC-USD`))
+#Set days
+days <- 200
+start_price <- last(`BTC-USD`$`BTC-USD.Close`)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = BTCmean, sd = BTC_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =BTCmean, sd = BTC_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of BTC-USD", xlab = "Days", ylim = c(10000, 70000))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*XRP_USD*
+
+```{r}
+
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+XRPmean <- mean(dailyReturn(`XRP-USD`))
+XRP_SD <- sd(dailyReturn(`XRP-USD`))
+#Set days
+days <- 200
+start_price <- last(`XRP-USD`$`XRP-USD.Close`)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = XRPmean, sd = XRP_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =XRPmean, sd = XRP_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of XRP-USD", xlab = "Days", ylim = c(0, 1.4))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*USDT-USD*
+
+```{r}
+
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+USDTmean <- mean(dailyReturn(`USDT-USD`))
+USDT_SD <- sd(dailyReturn(`USDT-USD`))
+#Set days
+days <- 200
+start_price <- last(`USDT-USD`$`USDT-USD.Close`)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = USDTmean, sd = USDT_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =USDTmean, sd = USDT_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of USDT-USD", xlab = "Days", ylim = c(0.8, 1.20))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*BNB-USD*
+
+```{r}
+
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+BNBmean <- mean(dailyReturn(`BNB-USD`))
+BNB_SD <- sd(dailyReturn(`BNB-USD`))
+#Set days
+days <- 200
+start_price <- last(`BNB-USD`$`BNB-USD.Close`)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = BNBmean, sd = BNB_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =BNBmean, sd = BNB_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of BNB-USD", xlab = "Days", ylim = c(100, 1400))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+*ETH-USD*
+
+```{r}
+#defining the parameters
+#Monte Carlo simulation code
+#Daily mean calculation
+ETHmean <- mean(dailyReturn(`ETH-USD`))
+ETH_SD <- sd(dailyReturn(`ETH-USD`))
+#Set days
+days <- 200
+start_price <- last(`ETH-USD`$`ETH-USD.Close`)[[1]]
+#Fix randomness
+set.seed(1234)
+#generation of random variables
+Returns <- 1+ rnorm(days, mean = ETHmean, sd = ETH_SD)
+#Price
+Price <- cumprod(c(start_price,Returns))
+number_of_simulations <- 1001
+Returns_matrix <- matrix(0, nrow = number_of_simulations, ncol = days)
+Price_matrix <- matrix(0, nrow = number_of_simulations, ncol = days +1)
+
+for(i in 1:number_of_simulations) {
+  Returns_matrix[i,] <- rnorm(days, mean =BTCmean, sd = ETH_SD )
+  Price_matrix[i,] <- cumprod(c(start_price, 1+Returns_matrix[i,1:days]))
+}
+
+
+#Plots
+plot(Price_matrix[1,], type ='l', ylab = "Simulated Prices of ETH-USD", xlab = "Days", ylim = c(0, 7000))
+for (i in 1:50){
+  lines(Price_matrix[i, ], type = 'l', col = i)
+}
+```
+OUTPUT EXPLANATION:
+
+The Monte Carlo simulation on the other hand highlights that for 1000 simulations on return the traditional assets I.e., VNQ, KR, PG are stable whereas CVX is moderately stable and GOOGLE has higher returns. For cryptocurrencies, ETH and XRP returns are low. BTC is highly unstable and BNB is moderately unstable and USDT is highly stable. 
+
+                                        **CONCLUSION**
+                                        
+Finally, the analysis compares the performance of traditional assets against that of cryptocurrency. While choosing cryptos, assets with low volatility and high market capitalization is the criteria, and while choosing traditional assets diversification and low volatility is the criteria.  Traditional assets provide higher yields than crypto-currencies, and most traditional assets would provide higher returns than crypto-currencies. Traditional assets also have the highest median return. The cryptos' returns contain extreme outliers.The variance of returns is likewise higher for cryptos, showing that they are risky. The associations are stronger for the chosen bitcoins. The reasons might be that it has high volatility, which means price swings, and therefore investors regularly sell and purchase these, and the second reason could be that investors typically buy these for future worth, emphasizing speculative value. Traditional assets have a high level of causation, which means that a change in one causes a change in another, because they are influenced by a wide range of macroeconomic factors like  inflation, economic growth, and many other factors. Volatility is high for crypto assets and low for traditional assets. Nonetheless, GOOGL is one of the exceptions with significant volatility.Such a shift could be linked to market swings in the technology sector. Based on the assets chosen, traditional assets have more variability than the cryptos and thus greater diversity, decreasing the stock market's rapid likelihood of loss. To assess the impact of macroeconomic conditions, the Inflation index, news-based economic policies, and Twitter uncertainty are used, which does not provide a complete explanation of the data. However, based on the parameters and assets chosen, cryptos are only tangentially related to these macroeconomic aspects. To obtain accurate descriptions, it is recommended that the study be performed on additional elements such as GDP, unemployment, interest rates, and regulatory indexes. In general, predicted returns are higher for GOOGL and stable for all other traditional assets, whereas returns for crypto-currencies are random and subject to large volatility. If an investor wants bigger profits and is willing to face risks, he should invest in cryptos. However, he/she should choose traditional assets if he/she wants more stability and less volatility, which is one of the main aspects needed to optimize the portfolio.                                       
+                                      
